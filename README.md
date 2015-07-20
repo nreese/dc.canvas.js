@@ -5,6 +5,8 @@ DC extension that provides support for canvas charts.
 SVG performance becomes a bottleneck when rendering scatter plots with 1000s of data points. This extension provides a scatter plot that is rendered with canvas and can be used in conjunction with existing dc charts.
 
 ## Usage
+View demo.html for a complete demonstration.
+
 ```
  var data = [
     {x: 2, y: 1, category: 'a'},
@@ -35,7 +37,11 @@ SVG performance becomes a bottleneck when rendering scatter plots with 1000s of 
 ```
 
 ## Crossfilter dimension
-dc.js scatter plots require a 2-d dimension. For example `var dim = cf.dimension(function(d) {return [d.x, d.y]; });`. The keyAccessor function `_chart.keyAccessor(function (d) { return originalKeyAccessor(d)[0]; });` is used to retrieve x-axis positions from the 2-d dimension. The valueAccessor function `_chart.valueAccessor(function (d) { return originalKeyAccessor(d)[1]; });` is used to retrieve y-axis positions from the 2-d dimension. Below is a code snipped from dc.js scatter plot showing how
+dc.js scatter plots require a 2-d dimension. For example `var dim = cf.dimension(function(d) {return [d.x, d.y]; });`. The keyAccessor function `_chart.keyAccessor(function (d) { return originalKeyAccessor(d)[0]; });` is used to retrieve x-axis positions from the 2-d dimension. The valueAccessor function `_chart.valueAccessor(function (d) { return originalKeyAccessor(d)[1]; });` is used to retrieve y-axis positions from the 2-d dimension.
+
+I do not like this implementation for two reasons. First, it is confusing. Second, it requires a new crossfilter dimension for each scatter plot. Since the scatter plots are only used to display data and not filter data, a unique dimension is not needed for each chart.
+
+The `canvasScatterPlot` takes any existing crossfilter dimension and does not require a group. X and Y axis positions are determined from `xAccessor` and `yAccessor` functions.
 
 
 
