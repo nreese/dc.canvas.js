@@ -81,8 +81,16 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     return _chart;
   }
   function renderXAxis(domain) {
-    _x.domain(domain);
-    _x.range([_chart.margins().left, _chart.effectiveWidth()]);
+    if ("ordinal" === getScaleType(_x)) {
+      _x.rangeRoundBands([_chart.margins().left, _chart.effectiveWidth()]);
+      //ticks function is used to iterate through axis ticks
+      //define ticks function to returns domain array
+      _x.ticks = function() { return _x.domain(); }
+      _xTickFormator = function(value) { return value; }
+    } else {
+      _x.domain(domain);
+      _x.range([_chart.margins().left, _chart.effectiveWidth()]);
+    }
 
     //draw x-axis baseline
     _context.beginPath();
@@ -138,8 +146,16 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     if (_y === undefined) {
       _y = d3.scale.linear();
     }
-    _y.domain(domain);
-    _y.range([_chart.margins().top, _chart.effectiveHeight()]);
+    if ("ordinal" === getScaleType(_y)) {
+      _y.rangeRoundBands([_chart.margins().top, _chart.effectiveHeight()]);
+      //ticks function is used to iterate through axis ticks
+      //define ticks function to returns domain array
+      _y.ticks = function() { return _y.domain(); }
+      _yTickFormator = function(value) { return value; }
+    } else {
+      _y.domain(domain);
+      _y.range([_chart.margins().top, _chart.effectiveHeight()]);
+    }
 
     //draw y-axis baseline
     _context.beginPath();
@@ -168,6 +184,14 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
       _context.font = font_size + 'pt';
       _context.fillText(label, x + dx, y + dy);
     });
+  }
+
+  function getScaleType(scale) {
+    var type = "quantitative";
+    if (scale.hasOwnProperty("rangePoints")) {
+      type = "ordinal";
+    }
+    return type;
   }
 
   return _chart.anchor(parent, chartGroup);
