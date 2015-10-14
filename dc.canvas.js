@@ -6,8 +6,10 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
   var _context;
   var _x;
   var _xAccessor;
+  var _xTickFormator;
   var _y;
   var _yAccessor;
+  var _yTickFormator;
 
   var tick_length = 8;
   var font_size = 10;
@@ -71,6 +73,13 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     _xAccessor = _;
     return _chart;
   }
+  _chart.xTickFormator = function(_) {
+    if(!arguments.length) {
+      return _xTickFormator;
+    }
+    _xTickFormator = _;
+    return _chart;
+  }
   function renderXAxis(domain) {
     _x.domain(domain);
     _x.range([_chart.margins().left, _chart.effectiveWidth()]);
@@ -86,7 +95,7 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     _context.fill();
     _context.closePath();
 
-    var format = _x.tickFormat(num_ticks);
+    var formator = _xTickFormator ? _xTickFormator : _x.tickFormat(num_ticks);
     _x.ticks(num_ticks).forEach(function(tick) {
       var x = _chart.margins().left + _x(tick);
       var y = _chart.height() - _chart.margins().bottom;
@@ -96,7 +105,7 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
       _context.fill();
       _context.closePath();
 
-      var label = format(tick);
+      var label = formator(tick);
       var dx = (label.length / 2) * -5; //shift text left to center
       var dy = font_size + tick_length + label_padding; //shift text below tick lines
       _context.font = font_size + 'pt';
@@ -118,6 +127,13 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     _yAccessor = _;
     return _chart;
   }
+  _chart.yTickFormator = function(_) {
+    if(!arguments.length) {
+      return _yTickFormator;
+    }
+    _yTickFormator = _;
+    return _chart;
+  }
   function renderYAxis(domain) {
     if (_y === undefined) {
       _y = d3.scale.linear();
@@ -136,7 +152,7 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     _context.fill();
     _context.closePath();
 
-    var format = _y.tickFormat(num_ticks);
+    var formator = _yTickFormator ? _yTickFormator : _y.tickFormat(num_ticks);
     _y.ticks(num_ticks).forEach(function(tick) {
       var x = _chart.margins().left - tick_length;
       var y = _chart.height() - _chart.margins().bottom - _y(tick);
@@ -146,7 +162,7 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
       _context.fill();
       _context.closePath();
 
-      var label = format(tick);
+      var label = formator(tick);
       var dx = (label.length * -5) - label_padding; //shift text left to of ticks
       var dy = font_size/3; //center text
       _context.font = font_size + 'pt';
