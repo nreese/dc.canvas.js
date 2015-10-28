@@ -1,10 +1,9 @@
 dc.canvasScatterPlot = function(parent, chartGroup) {
-  var _chart = dc.colorMixin(dc.marginMixin(dc.baseMixin({})));
+  var _chart = dc.coordinateGridMixin({});
   _chart._mandatoryAttributes(['dimension', 'x', 'xAccessor', 'yAccessor']);
 
   var _canvas;
   var _context;
-  var _x;
   var _xAccessor;
   var _xTickFormator;
   var _y;
@@ -36,7 +35,7 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     selected.forEach(function(d, i) {
       _context.beginPath();
       _context.rect(
-        _chart.margins().left + _x(_xAccessor(d)),
+        _chart.margins().left + _chart.x()(_xAccessor(d)),
         _chart.height() - _chart.margins().bottom - _y(_yAccessor(d)),
         4, 4);
       _context.fillStyle = _chart.getColor(d, i);
@@ -59,13 +58,6 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     return _canvas;
   }
 
-  _chart.x = function(_) {
-    if(!arguments.length) {
-      return _x;
-    }
-    _x = _;
-    return _chart;
-  }
   _chart.xAccessor = function(_) {
     if(!arguments.length) {
       return _xAccessor;
@@ -81,15 +73,15 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     return _chart;
   }
   function renderXAxis(domain) {
-    if ("ordinal" === getScaleType(_x)) {
-      _x.rangeRoundBands([_chart.margins().left, _chart.effectiveWidth()]);
+    if ("ordinal" === getScaleType(_chart.x())) {
+      _chart.x().rangeRoundBands([_chart.margins().left, _chart.effectiveWidth()]);
       //ticks function is used to iterate through axis ticks
       //define ticks function to returns domain array
-      _x.ticks = function() { return _x.domain(); }
+      _chart.x().ticks = function() { return _chart.x().domain(); }
       _xTickFormator = function(value) { return value; }
     } else {
-      _x.domain(domain);
-      _x.range([_chart.margins().left, _chart.effectiveWidth()]);
+      _chart.x().domain(domain);
+      _chart.x().range([_chart.margins().left, _chart.effectiveWidth()]);
     }
 
     //draw x-axis baseline
@@ -103,9 +95,9 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     _context.fill();
     _context.closePath();
 
-    var formator = _xTickFormator ? _xTickFormator : _x.tickFormat(num_ticks);
-    _x.ticks(num_ticks).forEach(function(tick) {
-      var x = _chart.margins().left + _x(tick);
+    var formator = _xTickFormator ? _xTickFormator : _chart.x().tickFormat(num_ticks);
+    _chart.x().ticks(num_ticks).forEach(function(tick) {
+      var x = _chart.margins().left + _chart.x()(tick);
       var y = _chart.height() - _chart.margins().bottom;
       _context.beginPath();
       _context.rect(x, y, 1, tick_length);
