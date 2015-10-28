@@ -19,17 +19,12 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
   }
 
   _chart._doRedraw = function () {
-    var selected = _chart.dimension().top(Infinity);
-    var xDomain = d3.extent(selected, function(d) {
-      return _xAccessor(d);
-    });
-    var yDomain = d3.extent(selected, function(d) {
-      return _yAccessor(d);
-    });
-
+    var selected = _chart.dimension().top(Infinity);    
     _chart.resetCanvas();
-    renderXAxis(xDomain);
-    renderYAxis(yDomain);
+    prepareXAxis(selected);
+    renderXAxis();
+    prepareYAxis(selected);
+    renderYAxis();
 
     selected.forEach(function(d, i) {
       _context.beginPath();
@@ -71,7 +66,14 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     _xTickFormator = _;
     return _chart;
   }
-  function renderXAxis(domain) {
+  function prepareXAxis (selected) {
+    var domain = _chart.x().domain();
+    if (_chart.elasticX() || domain.length === 0) {
+      domain = d3.extent(selected, function(d) {
+        return _xAccessor(d);
+      });
+    }
+
     if ("ordinal" === getScaleType(_chart.x())) {
       _chart.x().rangeRoundBands([_chart.margins().left, _chart.effectiveWidth()]);
       //ticks function is used to iterate through axis ticks
@@ -82,7 +84,8 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
       _chart.x().domain(domain);
       _chart.x().range([_chart.margins().left, _chart.effectiveWidth()]);
     }
-
+  }
+  function renderXAxis() {
     //draw x-axis baseline
     _context.beginPath();
     _context.rect(
@@ -126,10 +129,18 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     _yTickFormator = _;
     return _chart;
   }
-  function renderYAxis(domain) {
+  function prepareYAxis(selected) {
     if (_chart.y() === undefined) {
-      _chart.y(d3.scale.linear());
+      _chart.y(d3.scale.linear().domain([]));
     }
+
+    var domain = _chart.y().domain();
+    if (_chart.elasticY() || domain.length === 0) {
+      domain = d3.extent(selected, function(d) {
+        return _yAccessor(d);
+      });
+    }
+
     if ("ordinal" === getScaleType(_chart.y())) {
       _chart.y().rangeRoundBands([_chart.margins().top, _chart.effectiveHeight()]);
       //ticks function is used to iterate through axis ticks
@@ -140,7 +151,8 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
       _chart.y().domain(domain);
       _chart.y().range([_chart.margins().top, _chart.effectiveHeight()]);
     }
-
+  }
+  function renderYAxis() {
     //draw y-axis baseline
     _context.beginPath();
     _context.rect(

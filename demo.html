@@ -41,13 +41,15 @@
         .width(300)
         .height(300)
         .dimension(categoryDim)
-        .x(d3.scale.linear())
+        .x(d3.scale.linear().domain([0, 10]))
         .xAccessor(function(d) {
           return d.x;
         })
+        .elasticX(false)
         .yAccessor(function(d) {
           return d.y;
-        });
+        })
+        .elasticY(true);
 
       dc.renderAll();
     </script>

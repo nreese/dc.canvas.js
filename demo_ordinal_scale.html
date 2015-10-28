@@ -36,6 +36,7 @@
         .xAccessor(function(d) {
           return d.x;
         })
+        .elasticX(true)
         .y(d3.scale.ordinal().domain(['a', 'b', 'c', 'd']))
         .yAccessor(function(d) {
           return d.category;
