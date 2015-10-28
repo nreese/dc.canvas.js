@@ -6,7 +6,6 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
   var _context;
   var _xAccessor;
   var _xTickFormator;
-  var _y;
   var _yAccessor;
   var _yTickFormator;
 
@@ -36,7 +35,7 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
       _context.beginPath();
       _context.rect(
         _chart.margins().left + _chart.x()(_xAccessor(d)),
-        _chart.height() - _chart.margins().bottom - _y(_yAccessor(d)),
+        _chart.height() - _chart.margins().bottom - _chart.y()(_yAccessor(d)),
         4, 4);
       _context.fillStyle = _chart.getColor(d, i);
       _context.fill();
@@ -113,13 +112,6 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     });
   }
 
-  _chart.y = function(_) {
-    if(!arguments.length) {
-      return _y;
-    }
-    _y = _;
-    return _chart;
-  }
   _chart.yAccessor = function(_) {
     if(!arguments.length) {
       return _yAccessor;
@@ -135,18 +127,18 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     return _chart;
   }
   function renderYAxis(domain) {
-    if (_y === undefined) {
-      _y = d3.scale.linear();
+    if (_chart.y() === undefined) {
+      _chart.y(d3.scale.linear());
     }
-    if ("ordinal" === getScaleType(_y)) {
-      _y.rangeRoundBands([_chart.margins().top, _chart.effectiveHeight()]);
+    if ("ordinal" === getScaleType(_chart.y())) {
+      _chart.y().rangeRoundBands([_chart.margins().top, _chart.effectiveHeight()]);
       //ticks function is used to iterate through axis ticks
       //define ticks function to returns domain array
-      _y.ticks = function() { return _y.domain(); }
+      _chart.y().ticks = function() { return _chart.y().domain(); }
       _yTickFormator = function(value) { return value; }
     } else {
-      _y.domain(domain);
-      _y.range([_chart.margins().top, _chart.effectiveHeight()]);
+      _chart.y().domain(domain);
+      _chart.y().range([_chart.margins().top, _chart.effectiveHeight()]);
     }
 
     //draw y-axis baseline
@@ -160,10 +152,10 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     _context.fill();
     _context.closePath();
 
-    var formator = _yTickFormator ? _yTickFormator : _y.tickFormat(num_ticks);
-    _y.ticks(num_ticks).forEach(function(tick) {
+    var formator = _yTickFormator ? _yTickFormator : _chart.y().tickFormat(num_ticks);
+    _chart.y().ticks(num_ticks).forEach(function(tick) {
       var x = _chart.margins().left - tick_length;
-      var y = _chart.height() - _chart.margins().bottom - _y(tick);
+      var y = _chart.height() - _chart.margins().bottom - _chart.y()(tick);
       _context.beginPath();
       _context.rect(x, y, tick_length, 1);
       _context.fillStyle = 'black';
