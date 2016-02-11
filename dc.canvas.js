@@ -116,7 +116,7 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
 
     if (_chart.xAxisLabel()) {
       var x = _chart.margins().left + _chart.xAxisLength() / 2;
-      var y = _chart.height() - 12; //_xAxisLabelPadding but can not use sense not exposed
+      var y = _chart.height() - 12; //_xAxisLabelPadding but can not use since not exposed
       _context.fillText(_chart.xAxisLabel(), x, y);
     }
   }
@@ -188,7 +188,7 @@ dc.canvasScatterPlot = function(parent, chartGroup) {
     });
 
     if (_chart.yAxisLabel()) {
-      var labelXPosition = 12;
+      var labelXPosition = 12; //_yAxisLabelPadding but can not use since not exposed 
       var labelYPosition = (_chart.margins().top + _chart.yAxisHeight() / 2);
       //http://stackoverflow.com/questions/3167928/drawing-rotated-text-on-a-html5-canvas
       _context.save();
